@@ -146,6 +146,13 @@ public:
     // Contrat :
     //
 
+  
+    friend std::ostream & operator << (std::ostream & os, const ApacheLogData & logData);
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+    
 //-------------------------------------------- Constructeurs - destructeur
     ApacheLogData ( const ApacheLogData & unApacheLogData );
     // Mode d'emploi (constructeur de copie) :

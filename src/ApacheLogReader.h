@@ -43,6 +43,12 @@ public:
     // Contrat :
     //
 
+    bool EndOfFile();
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+    
     bool ResetReading(); // on a pas besoin mais jsp si c'est bien de le faire ?
     // Mode d'emploi :
     //
@@ -82,7 +88,7 @@ public:
     //
 
 //----------------------------------------------------- Attributs protégés
-    std::istream file;
+    std::ifstream file;
 };
 
 //-------------------------------- Autres définitions dépendantes de <ApacheLogReader>
