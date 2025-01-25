@@ -19,6 +19,7 @@ using namespace std;
 //------------------------------------------------------ Include personnel
 #include "AnalogControl.h"
 #include "ApacheLogReader.h"
+#include "AnalogAnalyse.h"
 
 //------------------------------------------------------------- Constantes
 
@@ -129,15 +130,20 @@ int AnalogControl::Run (const int argc, char ** argv)
     
     // Read the log file
     ReadFile(logFileName);
+             AnalogAnalyse A; 
 
     // If -g is enabled, generate a GraphViz file
     if (option_g)
     {
         cout << "Generating .dot file: " << dotFileName << endl;
+         A.creationficdot(data,dotFileName);
         // Call a method to generate the .dot file (to be implemented)
     }
 
     // Default: display the top 10 most visited documents
+   
+    A.analysetopn(data,10);
+   
     // Method to display results (to be implemented)
 
     return 0;
@@ -329,8 +335,9 @@ string AnalogControl::getDocumentFromReferer(const string& referer)
     size_t slashPos = referer.find("/", startPos);
 
     // Si "/" est trouvé, extraire la partie après le "/"
-    if (slashPos != std::string::npos) {
-        return referer.substr(slashPos + 1);  // Extraire tout après "/"
+    if (slashPos != std::string::npos) 
+    {
+        return referer.substr(slashPos);  
     }
 
     // Si "/" n'est pas trouvé, il n'y a pas de chemin

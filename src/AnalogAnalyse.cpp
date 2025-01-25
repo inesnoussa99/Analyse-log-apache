@@ -19,6 +19,7 @@ using namespace std;
 #include <cstring>
 #include <utility> // make_pair()
 #include <map>
+#include <ostream>
 #include <vector>
 #include <algorithm>
 //------------------------------------------------------ Include personnel
@@ -30,44 +31,147 @@ using namespace std;
 //----------------------------------------------------- Méthodes publiques
 bool compareavecsecond(const pair<int, string>& a, const pair<int, string>& b) 
 {
-    return a.second > b.second; // Tri décroissant
+    return a.first > b.first; // Tri décroissant
 }
 
-void AnalogAnalyse::analysetopn(logsdata data, int n) const
+string retrouvercorrespondancenode(string  m, vector<pair<string, string>> labelnode)
 {
-    //typedef map< string, map< map<string,int> ,int>> logsdata; 
+    string result;
+    int a=0;
+    for (vector<pair<string, string>>::const_iterator kt = labelnode.cbegin(); kt != labelnode.cend(); ++kt) 
+    {
+        if (kt->second == m) 
+        {  // Vérifier si le site est égal à 
+            result = kt->first; // Récupérer le premier élément
+            a=1;
+            break;              // Sortir de la boucle une fois trouvé
+        }
+    }
+    if(a==0) 
+    {
+        return "erreur";
+    }
+    return result;
+}
+
+int AnalogAnalyse::analysetopn(logsData data, int n) const
+{
+    //typedef map< string, pair< map<string,int> ,int>> logsData; 
     if (data.empty())
     {
         cout<< "Données vides" <<endl;
-        return;
+        return 1;
     }
- 
-    logsdata::iterator debut = data.begin();
-    logsdata::iterator fin = data.end();
+    
+    logsData::iterator debut = data.begin();
+    logsData::iterator fin = data.end();
 
     vector<pair<int, string>> valtriee; // conteneur temporaire pour stocker le site cible et son nombre de hit 
 
-    for ( logsdata::iterator it = debut; it != fin ; ++it )
+    for ( logsData::iterator it = debut; it != fin ; ++it )
     {
                 const string& premierecle = it->first; // Clé du premier niveau (string)
-                map<map<string,int>,int> & mapinterne= it->second; 
-                for (map<map<string,int>,int> ::iterator jt = mapinterne.begin(); jt != mapinterne.end(); jt++)//parcourir la deuxième map
-                {
-                    valtriee.push_back(make_pair(jt->second,premierecle)); // insérer le site cible et son nombre de hit dans le vecteur
-                }  
+                pair<map<string,int>,int> & paireinterne= it->second; 
+               
+                    valtriee.push_back(make_pair(paireinterne.second,premierecle)); // insérer le site cible et son nombre de hit dans le vecteur
     }
-    sort(valtriee.begin(),valtriee.end(),compareavecsecond);// trier entre un plage donner avec un critère spécifique ici la fonction compareavecsecond
+
+    sort(valtriee.begin(),valtriee.end(),compareavecsecond);// trier entre une plage donnée avec un critère spécifique ici la fonction compareavecsecond
     
     for ( vector<pair<int, string>>::iterator i = valtriee.begin();  i != valtriee.begin()+ n && i != valtriee.end() ; i++) 
     {
         //afficher le top n sites cibles avec le plus de hits
-        cout << i->first << ' (' << i->second << ')' << endl;
+        cout << i->second << " (" << i->first << " hits)" << endl;
     }
-    return;
+    return 0;
 }
 
 
-void AnalogAnalyse::creationficdot(logsdata data) const
+int AnalogAnalyse::creationficdot(logsData data,string filename) const
 {
+        //typedef map< string, pair< map<string,int> ,int>> logsData; 
+     if (data.empty())
+    {
+        cout<< "Données vides" <<endl;
+        return 1;
+    }
+    ofstream fichier(filename);
+    if (!fichier.is_open()) 
+    {
+        cerr << "Erreur : Impossible d'ouvrir le fichier .dot pour écrire." << endl;
+        return 1 ;
+    }
 
+    logsData::iterator debut = data.begin();
+    logsData::iterator fin = data.end();
+    int i=0;
+
+    fichier << "digraph {" << endl;// début fichier .dot
+
+    vector<pair<string, string>> labelnode; // conteneur temporaire pour stocker les nodes et leurs noms de sites correspondant
+
+for (logsData::iterator it = debut; it != fin; ++it) 
+{
+        const pair<map<string, int>, int>& secondPair = it->second;
+        const map<string, int>& internalMap = secondPair.first;
+        //ajout de tous les sites cibles au nodes
+          const string& sitecible = it->first; // Clé du premier niveau le site cible(string)
+                fichier<< "node" << i << " [label="<< sitecible <<"];" <<endl;
+                string nodei= "node" + to_string(i);
+                labelnode.push_back(make_pair(nodei, sitecible)); 
+                i++;
+
+        // Vérification pour chaque site référent de la map interne s'il existe ou pas dans la plage de tout les sites cible (voir propriètès graph)
+        for (map<string, int>::const_iterator jt = internalMap.begin(); jt != internalMap.end(); ++jt) 
+        {
+            const string& internalKey = jt->first;  // Clé interne (niveau 2)
+
+            // Si cette clé interne (site référent) n'existe pas parmi les premières clés (firstKey) il faut l'ajouter dans les nodes de la graphe
+            if (data.find(internalKey) == data.end()) 
+            {
+                fichier<< "node" << i << " [label="<< internalKey <<"];" <<endl;
+                
+                string nodeiref= "node" + to_string(i);
+                labelnode.push_back(make_pair(nodeiref, sitecible)); 
+                i++;
+            }
+        }
+}
+
+for (logsData::iterator it = debut; it != fin; ++it) 
+{
+        const pair<map<string, int>, int>& secondPair = it->second;
+        const map<string, int>& internalMap = secondPair.first;
+
+                  const string& sitecible = it->first; // Clé du premier niveau le site cible(string)
+
+                    string nodecible= retrouvercorrespondancenode(sitecible,labelnode);
+
+
+        // Vérification pour chaque site référent de la map interne s'il existe ou pas dans la plage de tout les sites cible (voir propriètès graph)
+        for (map<string, int>::const_iterator jt = internalMap.begin(); jt != internalMap.end(); ++jt) 
+        {
+            const string& siteref = jt->first;  // Clé interne (niveau 2)
+            const int & rhit = jt->second;
+            string noderef= retrouvercorrespondancenode(siteref,labelnode);
+
+            fichier << noderef << "-> " << nodecible << " [label="<< rhit <<"];" <<endl;
+        }
+            
+        }
+   
+    fichier << "}"; 
+    return 0;
+}
+AnalogAnalyse::AnalogAnalyse()
+{
+    #ifdef MAP
+    cout << "Appel au construction de <AnalogAnalyse>" << endl;
+    #endif
+}
+AnalogAnalyse::~AnalogAnalyse()
+{
+    #ifdef MAP
+    cout << "Appel au destructeur de <AnalogAnalyse>" << endl;
+    #endif
 }

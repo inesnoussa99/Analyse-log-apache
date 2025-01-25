@@ -15,13 +15,14 @@
 #include <iostream>
 #include <cstring>
 #include <map>
+#include "AnalogControl.h"
 using namespace std;
 //--------------------------------------------------- Interfaces utilisées
 
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
-typedef map< string, map< map<string,int> ,int>> logsdata; //dictionnaire
+
 
  
 class AnalogAnalyse 
@@ -29,8 +30,8 @@ class AnalogAnalyse
 
 public:
     //----------------------------------------------------- Méthodes publiques
-    void analysetopn(logsdata data,int n) const; // analyse du top n des sites les plus visités
-    void creationficdot(logsdata data) const;  // création du fichier .dot 
+    int analysetopn(logsData data,int n) const; // analyse du top n des sites les plus visités
+    int creationficdot(logsData data,string filename) const;  // création du fichier .dot 
 
     //----------------------------------------------------- Méthodes publiques pour le filtrage de données
 
