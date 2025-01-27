@@ -152,12 +152,21 @@ int AnalogControl::ReadFile ( const string & filename )
     reader.OpenFile(filename);
 
     if(!option_d)
-    {
-        ifstream file ("config/target_domain.txt");
+    {   
+        string domain_config_file = "./config/target_domain.txt";
+        ifstream file (domain_config_file);
         if(!file.is_open())
         {
-            cerr << "Domain config file ( target_domain.txt ) is missing..." << endl;
-            return -1;
+            file.open("../"+domain_config_file);
+            if(!file.is_open())
+            {
+                file.open("../../"+domain_config_file);
+                if(!file.is_open())
+                {
+                    cerr << "Domain config file ( config/target_domain.txt ) is missing..." << endl;
+                    return -1;
+                }
+            }
         }
         file>>domain;
         file.close();
@@ -184,10 +193,7 @@ int AnalogControl::ReadFile ( const string & filename )
 
         if(option_t)
         {
-         
-
-            // Le format attendu est "[08/Sep/2012:11:15:00 +0200]"
-
+    
             size_t start = log.GetDate().find(':');
             int heure_date = stoi(log.GetDate().substr(start + 1, 2));
 
@@ -295,7 +301,7 @@ string AnalogControl::getDomainFromReferer(const string& referer)
     // Trouver la position après "http://" ou "https://"
     string::size_type startPos = referer.find("://");
     if (startPos == string::npos) {
-        return ""; // Pas un URL valide
+        return "-"; // Pas un URL valide
     }
     startPos += 3; // Sauter "://"
 
@@ -319,7 +325,7 @@ string AnalogControl::getDocumentFromReferer(const string& referer)
         startPos += 3; // "://"
     } else {
         // Si "://" n'est pas trouvé, l'URL est mal formée
-        return "";
+        return "-";
     }
 
     // Trouver la position du premier "/" après le nom de domaine
@@ -332,7 +338,7 @@ string AnalogControl::getDocumentFromReferer(const string& referer)
     }
 
     // Si "/" n'est pas trouvé, il n'y a pas de chemin
-    return "";
+    return "-";
 }
 
 string AnalogControl::getTargetFromRequest(const string& request)
@@ -348,5 +354,5 @@ string AnalogControl::getTargetFromRequest(const string& request)
     }
     
     // Si les positions ne sont pas valides, retourner une chaîne vide
-    return "";
+    return "-";
 }
