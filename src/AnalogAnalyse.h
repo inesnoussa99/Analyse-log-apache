@@ -30,8 +30,8 @@ class AnalogAnalyse
 
 public:
     //----------------------------------------------------- Méthodes publiques
-    int analysetopn(logsData data,int n) const; // analyse du top n des sites les plus visités
-    int creationficdot(logsData data,string filename) const;  // création du fichier .dot 
+    int analysetopn(const logsData &data,int n) const; // analyse du top n des sites les plus visités
+    int creationficdot(const logsData &data,string filename) const;  // création du fichier .dot 
 
     //----------------------------------------------------- Méthodes publiques pour le filtrage de données
 
@@ -46,6 +46,9 @@ public:
      ~AnalogAnalyse();
     
     //----------------------------------------------------- Attributs protégés
+   private: 
+    string retrouvercorrespondancenode(const string& m, const vector<pair<string, string>>& labelnode) const;
+    static bool compareavecsecond(const pair<int, string>& a, const pair<int, string>& b);
 
 };
 

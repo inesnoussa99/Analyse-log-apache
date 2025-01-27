@@ -29,12 +29,12 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-bool compareavecsecond(const pair<int, string>& a, const pair<int, string>& b) 
+ bool AnalogAnalyse::compareavecsecond(const pair<int, string>& a, const pair<int, string>& b) 
 {
     return a.first > b.first; // Tri décroissant
 }
 
-string retrouvercorrespondancenode(string  m, vector<pair<string, string>> labelnode)
+string AnalogAnalyse::retrouvercorrespondancenode(const string& m, const vector<pair<string, string>>& labelnode) const
 {
     string result;
     int a=0;
@@ -54,7 +54,7 @@ string retrouvercorrespondancenode(string  m, vector<pair<string, string>> label
     return result;
 }
 
-int AnalogAnalyse::analysetopn(logsData data, int n) const
+int AnalogAnalyse::analysetopn(const logsData& data, int n) const
 {
     //typedef map< string, pair< map<string,int> ,int>> logsData; 
     if (data.empty())
@@ -63,17 +63,17 @@ int AnalogAnalyse::analysetopn(logsData data, int n) const
         return 1;
     }
     
-    logsData::iterator debut = data.begin();
-    logsData::iterator fin = data.end();
+    logsData::const_iterator debut = data.cbegin();
+    logsData::const_iterator fin = data.cend();
 
     vector<pair<int, string>> valtriee; // conteneur temporaire pour stocker le site cible et son nombre de hit 
 
-    for ( logsData::iterator it = debut; it != fin ; ++it )
+    for ( logsData::const_iterator it = debut; it != fin ; ++it )
     {
                 const string& premierecle = it->first; // Clé du premier niveau (string)
-                pair<map<string,int>,int> & paireinterne= it->second; 
+                pair<map<string,int>,int> paireinterne= it->second; 
                
-                    valtriee.push_back(make_pair(paireinterne.second,premierecle)); // insérer le site cible et son nombre de hit dans le vecteur
+                valtriee.push_back(make_pair(paireinterne.second,premierecle)); // insérer le site cible et son nombre de hit dans le vecteur
     }
 
     sort(valtriee.begin(),valtriee.end(),compareavecsecond);// trier entre une plage donnée avec un critère spécifique ici la fonction compareavecsecond
@@ -87,7 +87,7 @@ int AnalogAnalyse::analysetopn(logsData data, int n) const
 }
 
 
-int AnalogAnalyse::creationficdot(logsData data,string filename) const
+int AnalogAnalyse::creationficdot(const logsData &data,string filename) const
 {
         //typedef map< string, pair< map<string,int> ,int>> logsData; 
      if (data.empty())
@@ -101,21 +101,22 @@ int AnalogAnalyse::creationficdot(logsData data,string filename) const
         cerr << "Erreur : Impossible d'ouvrir le fichier .dot pour écrire." << endl;
         return 1 ;
     }
+    vector<pair<string, string>> labelnode; // conteneur temporaire pour stocker les nodes et leurs noms de sites correspondant
+   
 
-    logsData::iterator debut = data.begin();
-    logsData::iterator fin = data.end();
+    logsData::const_iterator debut = data.cbegin();
+    logsData::const_iterator fin = data.cend();
     int i=0;
 
     fichier << "digraph {" << endl;// début fichier .dot
 
-    vector<pair<string, string>> labelnode; // conteneur temporaire pour stocker les nodes et leurs noms de sites correspondant
 
-for (logsData::iterator it = debut; it != fin; ++it) 
+for (logsData::const_iterator it = debut; it != fin; ++it) 
 {
-        const pair<map<string, int>, int>& secondPair = it->second;
-        const map<string, int>& internalMap = secondPair.first;
+        pair<map<string, int>, int> secondPair = it->second;
+        map<string, int> internalMap = secondPair.first;
         //ajout de tous les sites cibles au nodes
-          const string& sitecible = it->first; // Clé du premier niveau le site cible(string)
+           string sitecible = it->first; // Clé du premier niveau le site cible(string)
                 fichier<< "node" << i << " [label="<< sitecible <<"];" <<endl;
                 string nodei= "node" + to_string(i);
                 labelnode.push_back(make_pair(nodei, sitecible)); 
@@ -124,7 +125,7 @@ for (logsData::iterator it = debut; it != fin; ++it)
         // Vérification pour chaque site référent de la map interne s'il existe ou pas dans la plage de tout les sites cible (voir propriètès graph)
         for (map<string, int>::const_iterator jt = internalMap.begin(); jt != internalMap.end(); ++jt) 
         {
-            const string& internalKey = jt->first;  // Clé interne (niveau 2)
+             string internalKey = jt->first;  // Clé interne (niveau 2)
 
             // Si cette clé interne (site référent) n'existe pas parmi les premières clés (firstKey) il faut l'ajouter dans les nodes de la graphe
             if (data.find(internalKey) == data.end()) 
@@ -138,12 +139,12 @@ for (logsData::iterator it = debut; it != fin; ++it)
         }
 }
 
-for (logsData::iterator it = debut; it != fin; ++it) 
+for (logsData::const_iterator it = debut; it != fin; ++it) 
 {
-        const pair<map<string, int>, int>& secondPair = it->second;
-        const map<string, int>& internalMap = secondPair.first;
+         pair<map<string, int>, int> secondPair = it->second;
+         map<string, int> internalMap = secondPair.first;
 
-                  const string& sitecible = it->first; // Clé du premier niveau le site cible(string)
+                 const  string sitecible = it->first; // Clé du premier niveau le site cible(string)
 
                     string nodecible= retrouvercorrespondancenode(sitecible,labelnode);
 
@@ -151,8 +152,8 @@ for (logsData::iterator it = debut; it != fin; ++it)
         // Vérification pour chaque site référent de la map interne s'il existe ou pas dans la plage de tout les sites cible (voir propriètès graph)
         for (map<string, int>::const_iterator jt = internalMap.begin(); jt != internalMap.end(); ++jt) 
         {
-            const string& siteref = jt->first;  // Clé interne (niveau 2)
-            const int & rhit = jt->second;
+           const  string siteref = jt->first;  // Clé interne (niveau 2)
+            int  rhit = jt->second;
             string noderef= retrouvercorrespondancenode(siteref,labelnode);
 
             fichier << noderef << "-> " << nodecible << " [label="<< rhit <<"];" <<endl;
