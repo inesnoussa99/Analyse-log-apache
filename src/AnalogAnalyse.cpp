@@ -92,7 +92,7 @@ int AnalogAnalyse::creationficdot(const logsData &data,string filename) const
         //typedef map< string, pair< map<string,int> ,int>> logsData; 
      if (data.empty())
     {
-        cout<< "Données vides" <<endl;
+        cout<< "Donnees vides" <<endl;
         return 1;
     }
     ofstream fichier(filename);

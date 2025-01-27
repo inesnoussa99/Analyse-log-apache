@@ -131,11 +131,11 @@ int AnalogControl::Run (const int argc, char ** argv)
     if (option_g)
     {
         cout << "Generating .dot file: " << dotFileName << endl;
-        //  A.creationficdot(data,dotFileName);
+         A.creationficdot(data,dotFileName);
     }
     else
     {
-        // A.analysetopn(data,10);
+        A.analysetopn(data,10);
 
     }
    
