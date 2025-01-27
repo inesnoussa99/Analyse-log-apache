@@ -80,6 +80,10 @@ int AnalogControl::Run (const int argc, char ** argv)
                     cerr << "Error: -t option requires a valid hour between 0 and 23" << endl;
                     return -1;
                 }
+                else
+                {
+                    cout<<"Warning : only hits between "<<hour<<"h and "<<hour+1<<"h have been taken into account"<<endl;
+                }
             }
             else
             {
@@ -133,12 +137,9 @@ int AnalogControl::Run (const int argc, char ** argv)
         cout << "Generating .dot file: " << dotFileName << endl;
          A.creationficdot(data,dotFileName);
     }
-    else
-    {
-        A.analysetopn(data,10);
-
-    }
-   
+    
+    A.analysetopn(data,10);
+    
     return 0;
 
 } //----- Fin de Run
