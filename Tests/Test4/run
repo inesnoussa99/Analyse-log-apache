@@ -1,1 +1,1 @@
-./analog.exe -e Tests/Test4/fichier.txt 
+./analog -e Tests/Test4/fichier.log
