@@ -15,6 +15,7 @@
 #include <iostream>
 #include <cstring>
 #include <map>
+#include <vector>
 #include "AnalogControl.h"
 using namespace std;
 //--------------------------------------------------- Interfaces utilisées
