@@ -140,7 +140,14 @@ ApacheLogData ApacheLogReader::ReadLine()
     // Récupérer la taille des données
     startPos = endPos + 1;
     endPos = logLine.find(' ', startPos);
-    logData.SetDataSize(std::stoi(logLine.substr(startPos, endPos - startPos)));
+  
+    try {
+        logData.SetDataSize(std::stoi(logLine.substr(startPos, endPos - startPos)));
+    } catch (const std::invalid_argument& e) {
+        logData.SetDataSize(0);
+    } catch (const std::out_of_range& e) {
+        logData.SetDataSize(0);
+    }
 
     // Récupérer le référent (tout entre guillemets)
     startPos = logLine.find('"', endPos) + 1; // juste après le guillemet
@@ -151,6 +158,8 @@ ApacheLogData ApacheLogReader::ReadLine()
     startPos = logLine.find('"', endPos) + 1;
     logData.SetNavigator(logLine.substr(startPos));
 
+    // cout<<"READER : log readed = \r\n"<<logData<<endl;
+    
     return logData;
 } //----- Fin de ReadLine
 

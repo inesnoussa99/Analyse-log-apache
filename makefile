@@ -1,6 +1,6 @@
 # Variables
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -I./src
+CXXFLAGS = -Wall -Wextra -std=c++17 -I./src -g
 LDFLAGS = 
 SRC_DIR = src
 OBJ_DIR = obj

@@ -174,8 +174,9 @@ int AnalogControl::ReadFile ( const string & filename )
         if(option_e)
         {
             if(endsWith(target,".css")   || endsWith(target,".js") ||
-               endsWith(target,".png")  || endsWith(target,".gif")||
-               endsWith(target,".jpeg") || endsWith(target,".jpg"))
+               endsWith(target,".png")  || endsWith(target,".gif") ||
+               endsWith(target,".jpeg") || endsWith(target,".jpg") ||
+               endsWith(target,".ico"))
             {
                 continue;
             }
@@ -188,8 +189,7 @@ int AnalogControl::ReadFile ( const string & filename )
             // Le format attendu est "[08/Sep/2012:11:15:00 +0200]"
 
             size_t start = log.GetDate().find(':');
-            int heure_date = stoi(log.GetDate().substr(start + 1, 8));
-            
+            int heure_date = stoi(log.GetDate().substr(start + 1, 2));
 
             if (!(hour <= heure_date && heure_date < hour + 1))
             {
