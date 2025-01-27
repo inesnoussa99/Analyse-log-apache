@@ -135,7 +135,13 @@ ApacheLogData ApacheLogReader::ReadLine()
     // Récupérer le code de statut (après la requête)
     startPos = endPos + 2; // après les guillemets et l'espace
     endPos = logLine.find(' ', startPos);
-    logData.SetStatusCode(std::stoi(logLine.substr(startPos, endPos - startPos)));
+    try {
+        logData.SetStatusCode(std::stoi(logLine.substr(startPos, endPos - startPos)));
+    } catch (const std::invalid_argument& e) {
+        logData.SetDataSize(520);               // 520 = unkown error
+    } catch (const std::out_of_range& e) {
+        logData.SetDataSize(520);
+    }
 
     // Récupérer la taille des données
     startPos = endPos + 1;
