@@ -178,7 +178,7 @@ protected:
 //----------------------------------------------------- Méthodes protégées
 
 //----------------------------------------------------- Attributs protégés
-    std::string ipAddress;   // IP address of the client
+    std::string ipAddress;   // IP address
     std::string userLogname; // User Logname   
     std::string userAuthName;// Authenticated Username
     std::string date;        // Date and time of the request
@@ -186,7 +186,7 @@ protected:
     int statusCode;          // HTTP status code
     int dataSize;            // Data size in bytes
     std::string referer;     // Referer URL
-    std::string navigator;   // navigator identification
+    std::string navigator;   // Navigator identification
 };
 
 //-------------------------------- Autres définitions dépendantes de <ApacheLogData>

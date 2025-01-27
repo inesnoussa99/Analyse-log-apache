@@ -15,7 +15,8 @@ using namespace std;
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <ctime>
+#include <time.h>
+
 //------------------------------------------------------ Include personnel
 #include "AnalogControl.h"
 #include "ApacheLogReader.h"
@@ -71,16 +72,10 @@ int AnalogControl::Run (const int argc, char ** argv)
         {
             if (i + 1 < argc)
             {
-                option_t = true;
-                try
-                {
-                    hour = stoi(argv[++i]);
-                    if (hour < 0 || hour > 23)
-                    {
-                        throw out_of_range("Hour out of range");
-                    }
-                }
-                catch (const exception& e)
+                option_t = true;               
+                hour = stoi(argv[++i]);
+
+                if (hour < 0 || hour > 23)
                 {
                     cerr << "Error: -t option requires a valid hour between 0 and 23" << endl;
                     return -1;
@@ -130,22 +125,20 @@ int AnalogControl::Run (const int argc, char ** argv)
     
     // Read the log file
     ReadFile(logFileName);
-             AnalogAnalyse A; 
+    AnalogAnalyse A; 
 
     // If -g is enabled, generate a GraphViz file
     if (option_g)
     {
         cout << "Generating .dot file: " << dotFileName << endl;
-         A.creationficdot(data,dotFileName);
-        // Call a method to generate the .dot file (to be implemented)
+        //  A.creationficdot(data,dotFileName);
     }
+    else
+    {
+        // A.analysetopn(data,10);
 
-    // Default: display the top 10 most visited documents
+    }
    
-    A.analysetopn(data,10);
-   
-    // Method to display results (to be implemented)
-
     return 0;
 
 } //----- Fin de Run
@@ -189,17 +182,13 @@ int AnalogControl::ReadFile ( const string & filename )
 
         if(option_t)
         {
-            tm tm = {};
-    
+         
+
             // Le format attendu est "[08/Sep/2012:11:15:00 +0200]"
-            const char* format = "[%d/%b/%Y:%H:%M:%S %z]";
 
-            // Utiliser strptime pour analyser la date
-            if (strptime(log.GetDate().c_str(), format, &tm) == nullptr) {
-                continue;
-            }
-
-            int heure_date = tm.tm_hour;
+            size_t start = log.GetDate().find(':');
+            int heure_date = stoi(log.GetDate().substr(start + 1, 8));
+            
 
             if (!(hour <= heure_date && heure_date < hour + 1))
             {
@@ -249,12 +238,13 @@ int AnalogControl::ReadFile ( const string & filename )
 
     reader.CloseFile();
 
-    for (const auto& cible_entry : data) {
-        cout << "Cible: " << cible_entry.first << "- Compte General "<< cible_entry.second.second << endl;
-        for (const auto& referer_entry : cible_entry.second.first) {
-            cout << "  Referer: " << referer_entry.first << " - Compte: " << referer_entry.second << endl;
-        }
-    }
+    // Affichage du contenu de la structure de donnée
+    // for (const auto& cible_entry : data) {
+    //     cout << "Cible: " << cible_entry.first << "- Compte General "<< cible_entry.second.second << endl;
+    //     for (const auto& referer_entry : cible_entry.second.first) {
+    //         cout << "  Referer: " << referer_entry.first << " - Compte: " << referer_entry.second << endl;
+    //     }
+    // }
 
     return 0;
 

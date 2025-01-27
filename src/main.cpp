@@ -5,8 +5,6 @@ using namespace std;
 int main(int argc, char** argv)
 {
     AnalogControl ac;
-    ac.Run(argc,argv);
-
-    return 0;
+    return ac.Run(argc,argv);
 }
 

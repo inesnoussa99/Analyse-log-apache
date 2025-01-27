@@ -49,7 +49,7 @@ public:
     // Contrat :
     //
     
-    bool ResetReading(); // on a pas besoin mais jsp si c'est bien de le faire ?
+    bool ResetReading();
     // Mode d'emploi :
     //
     // Contrat :
