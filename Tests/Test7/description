@@ -1,1 +1,1 @@
-Essai de test de recopie d'un fichier sur l'erreur standard
+Ce test permet de vérifier que l'application demande une heure cohérante avec l'option -t (entre 0 et 23).

@@ -16,11 +16,32 @@
 #include "ApacheLogReader.h"
 //------------------------------------------------------------- Constantes
 
+enum AnalogReturnCode {
+    
+    AC_SUCCESS, // 0
+
+    AC_INVALID_ARGUMENT_COUNT, // 1
+
+    AC_MISSING_ARGUMENT, // 2
+
+    AC_INVALID_TIME_VALUE, // 3
+
+    AC_INVALID_NUMERIC_VALUE, // 4
+
+    AC_UNKNOWN_OPTION, // 5
+
+    AC_TOO_MANY_ARGUMENTS, // 6
+
+    AC_MISSING_LOG_FILE, // 7
+
+    AC_MISSING_CONFIG_FILE // 8
+
+};
+
 //------------------------------------------------------------------ Types
 
-// typedef std::map<std::string,std::map<std::map<std::string,int>,int>> logsData;
-
 typedef std::map<std::string,std::pair<std::map<std::string,int>,int>> logsData;
+
 
 //------------------------------------------------------------------------
 // Rôle de la classe <AnalogControl>
@@ -35,13 +56,13 @@ class AnalogControl
 public:
 //----------------------------------------------------- Méthodes publiques
 
-    int Run (const int argc, char** argv);
+    AnalogReturnCode Run (const int argc, char** argv);
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    int ReadFile(const std::string & filename);
+    AnalogReturnCode ReadFile(const std::string & filename);
     // Mode d'emploi :
     //
     // Contrat :
@@ -72,30 +93,7 @@ public:
 
 protected:
 //----------------------------------------------------- Méthodes protégées
-    bool endsWith(const std::string& str, const std::string& suffix);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
 
-    std::string getDomainFromReferer(const std::string& referer);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
-    std::string getDocumentFromReferer(const std::string& referer);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
-    std::string getTargetFromRequest(const std::string& request);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-    
 //----------------------------------------------------- Attributs protégés
     logsData data;
 
@@ -106,7 +104,8 @@ protected:
     int hour;
     bool option_d; // use custom domain name
     std::string domain;
-
+    bool option_n;
+    int n;
 
 };
 

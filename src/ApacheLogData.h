@@ -30,31 +30,31 @@ public:
 //----------------------------------------------------- Méthodes publiques
 
 //------------------------------------------------------ Getters
-    const std::string& GetIpAddress() const ;
+    std::string GetIpAddress() const ;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    const std::string& GetUserLogname() const ;
+    std::string GetUserLogname() const ;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    const std::string& GetUserAuthName() const ;
+    std::string GetUserAuthName() const ;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    const std::string& GetDate() const ;
+    std::string GetDate() const ;
     // Mode d'emploi :
     //
     // Contrat :
     //
     
-    const std::string& GetRequest() const ;
+    std::string GetRequest() const ;
     // Mode d'emploi :
     //
     // Contrat :
@@ -72,18 +72,54 @@ public:
     // Contrat :
     //
     
-    const std::string& GetReferer() const ;
+    std::string GetReferer() const ;
     // Mode d'emploi :
     //
     // Contrat :
     //
     
-    const std::string& GetNavigator() const ;
+    std::string GetNavigator() const ;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
+     std::string GetMethodFromRequest() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    std::string GetTargetFromRequest() const; 
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    std::string GetFileExtension() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    bool TargetIsDirectory() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    std::string GetDocumentFromReferer() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    std::string GetDomainFromReferer() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+    
 //------------------------------------------------------ Setters
     void SetIpAddress(const std::string& ip);
     // Mode d'emploi :
@@ -138,6 +174,8 @@ public:
     //
     // Contrat :
     //
+
+   
 
 //------------------------------------------------- Surcharge d'opérateurs
     ApacheLogData & operator = ( const ApacheLogData & unApacheLogData ); 

@@ -22,43 +22,43 @@ using namespace std;
 
 //----------------------------------------------------- Méthodes publiques
 
-bool ApacheLogReader::OpenFile (const std::string& filename)
+ApacheLogReaderReturnCode ApacheLogReader::OpenFile (const std::string& filename)
 // Algorithme :
 //
 {
     if (file.is_open()) {
         std::cerr << "File is already open." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_ALREADY_OPEN;
     }
 
     file.open(filename, std::ios::in);
 
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filename << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_NOT_FOUND;
     }
 
-    return true;
+    return ApacheLogReaderReturnCode::ALR_SUCCESS;
 } //----- Fin de OpenFile
 
 
-bool ApacheLogReader::CloseFile()
+ApacheLogReaderReturnCode ApacheLogReader::CloseFile()
 // Algorithme :
 //
 {
     if (!file.is_open()) {
         std::cerr << "No file is currently open." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_NOT_OPEN;
     }
 
     file.close();
 
     if (file.is_open()) {
         std::cerr << "Failed to close the file." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_CLOSE_ERROR;
     }
 
-    return true;
+    return ApacheLogReaderReturnCode::ALR_SUCCESS;
 } //----- Fin de CloseFile
 
 
@@ -75,18 +75,18 @@ bool ApacheLogReader::EndOfFile()
 } //----- Fin de EndOfFile
 
 
-bool ApacheLogReader::ResetReading()
+ApacheLogReaderReturnCode ApacheLogReader::ResetReading()
 // Algorithme :
 //
 {
     if (!file.is_open()) {
         std::cerr << "No file is currently open to reset." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_NOT_OPEN;
     }
 
     file.clear(); // Efface les flags d'erreur potentiels (EOF, etc.)
     file.seekg(0, std::ios::beg);
-    return true;
+    return ApacheLogReaderReturnCode::ALR_SUCCESS;
 } //----- Fin de ResetReading
 
 ApacheLogData ApacheLogReader::ReadLine()

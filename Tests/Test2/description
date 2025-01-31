@@ -1,1 +1,1 @@
-On ne met pas de fichier log 
+Ce test permet de vérifier que l'application renvoie une erreur lorsque le fichier de log a lire est manquant.

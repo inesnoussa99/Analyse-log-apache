@@ -1,1 +1,1 @@
-./analog -e -t 11  Tests/Test9/fichier.log
+../../analog fichier.log -t

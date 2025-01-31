@@ -1,1 +1,1 @@
-./analog -e Tests/Test4/fichier.log
+../../analog fichier.log -g dotfile.dot

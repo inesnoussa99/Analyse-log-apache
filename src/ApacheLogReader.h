@@ -17,7 +17,19 @@
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
+enum ApacheLogReaderReturnCode {
 
+    ALR_SUCCESS, // 0
+
+    ALR_FILE_ALREADY_OPEN, // 1
+
+    ALR_FILE_NOT_FOUND, // 2
+
+    ALR_FILE_NOT_OPEN, // 3
+
+    ALR_FILE_CLOSE_ERROR // 4
+
+};
 //------------------------------------------------------------------------
 // Rôle de la classe <ApacheLogReader>
 //
@@ -31,13 +43,13 @@ class ApacheLogReader
 public:
 //----------------------------------------------------- Méthodes publiques
 
-    bool OpenFile(const std::string& filename);
+    ApacheLogReaderReturnCode OpenFile(const std::string& filename);
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    bool CloseFile();
+    ApacheLogReaderReturnCode CloseFile();
     // Mode d'emploi :
     //
     // Contrat :
@@ -49,7 +61,7 @@ public:
     // Contrat :
     //
     
-    bool ResetReading();
+    ApacheLogReaderReturnCode ResetReading();
     // Mode d'emploi :
     //
     // Contrat :

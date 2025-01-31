@@ -1,0 +1,6 @@
+Ce test permet de vérifier que l'application ne fonctionne pas sans le fichier de configuration.
+Pour effectuer ce test, il faut retirer le fichier de configuration config/target_domain.txt (Attention à bien le remettre pour les autres tests).
+
+Raccourcis : 
+mv ../config/target_domain.txt ../config/juste_pour_tester;
+mv ../config/juste_pour_tester ../config/target_domain.txt;
