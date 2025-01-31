@@ -1,1 +1,1 @@
-../../analog fichier.log -d test.com
+../../bin/analog fichier.log -d test.com

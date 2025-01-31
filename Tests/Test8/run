@@ -1,1 +1,1 @@
-../../analog fichier.log -t toto
+../../bin/analog fichier.log -t toto

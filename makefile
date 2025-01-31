@@ -9,7 +9,7 @@ BIN_DIR = bin
 # Liste des fichiers sources et des objets correspondants
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
-TARGET = analog
+TARGET = $(BIN_DIR)/analog
 
 # Règles par défaut
 all: $(TARGET)
