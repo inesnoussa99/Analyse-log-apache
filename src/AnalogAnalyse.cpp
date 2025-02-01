@@ -118,7 +118,7 @@ for (logsData::const_iterator it = debut; it != fin; ++it)
         map<string, int> internalMap = secondPair.first;
         //ajout de tous les sites cibles au nodes
            string sitecible = it->first; // Clé du premier niveau le site cible(string)
-                fichier<< "node" << i << " [label="<< sitecible <<"];" <<endl;
+                fichier<< "node" << i << " [label=\""<< sitecible <<"\"];" <<endl;
                 string nodei= "node" + to_string(i);
                 labelnode.push_back(make_pair(nodei, sitecible)); 
                 i++;
