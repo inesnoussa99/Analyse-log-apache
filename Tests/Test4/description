@@ -1,1 +1,1 @@
-Test du code retour du programme correct
+Ce test permet de vérifier que l'application génère bien le fichier au format GraphViz du fichier log de log analysé avec l'option -g.

@@ -22,41 +22,36 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-// type ApacheLogData::Méthode ( liste des paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
 
-const std::string& ApacheLogData::GetIpAddress() const
+string ApacheLogData::GetIpAddress() const
 // Algorithme :
 //
 {
     return ipAddress;
 } //----- Fin de Méthode
 
-const std::string& ApacheLogData::GetUserLogname() const
+string ApacheLogData::GetUserLogname() const
 // Algorithme :
 //
 {
     return userLogname;
 } //----- Fin de Méthode
 
-const std::string& ApacheLogData::GetUserAuthName() const
+string ApacheLogData::GetUserAuthName() const
 // Algorithme :
 //
 {
     return userAuthName;
 } //----- Fin de Méthode
 
-const std::string& ApacheLogData::GetDate() const
+string ApacheLogData::GetDate() const
 // Algorithme :
 //
 {
     return date;
 } //----- Fin de Méthode
 
-const std::string& ApacheLogData::GetRequest() const
+string ApacheLogData::GetRequest() const
 // Algorithme :
 //
 {
@@ -77,42 +72,155 @@ int ApacheLogData::GetDataSize() const
     return dataSize;
 } //----- Fin de Méthode
 
-const std::string& ApacheLogData::GetReferer() const
+string ApacheLogData::GetReferer() const
 // Algorithme :
 //
 {
     return referer;
 } //----- Fin de Méthode
 
-const std::string& ApacheLogData::GetNavigator() const
+string ApacheLogData::GetNavigator() const
 // Algorithme :
 //
 {
     return navigator;
 } //----- Fin de Méthode
 
-//------------------------------------------------------ Setters
-void ApacheLogData::SetIpAddress(const std::string& ip)
+
+string ApacheLogData::GetTargetFromRequest() const
+// Algorithme :
+//
+{
+    size_t startPos = request.find(" ") + 1; // Après le premier espace, pour l'URL
+    
+    // Trouver la position du dernier espace avant la version HTTP
+    size_t endPos = request.rfind(" ");
+    
+    // Si les positions sont valides, on extrait l'URL
+    if (startPos != string::npos && endPos != string::npos && startPos < endPos) {
+        return request.substr(startPos, endPos - startPos); // Extrait l'URL
+    }
+    
+    // Si les positions ne sont pas valides, retourner une chaîne vide
+    return "-";
+} //----- Fin de Méthode
+
+string ApacheLogData::GetMethodFromRequest() const
+// Algorithme :
+//
+{
+    size_t endPos = request.find(" "); // Avant le premier espace
+
+    if (endPos != string::npos && 0 < endPos) {
+        return request.substr(0, endPos); // Extrait la Methode
+    }
+
+    // Si les positions ne sont pas valides, retourner une chaîne vide
+    return "-";
+} //----- Fin de Méthode
+
+string ApacheLogData::GetFileExtension() const
+// Algorithme :
+//
+{
+    // Trouver la position du dernier '/'
+    size_t lastSlash = GetTargetFromRequest().find_last_of("/\\");
+    
+    // Extraire le nom du fichier (sans le chemin)
+    string filename = (lastSlash != string::npos) ? GetTargetFromRequest().substr(lastSlash + 1) : GetTargetFromRequest();
+    
+    // Supprimer la partie après un éventuel point-virgule ou point d'interrogation (paramètres d'URL)
+    size_t delimiterPos = filename.find_first_of(";?");
+    if (delimiterPos != string::npos) {
+        filename = filename.substr(0, delimiterPos);
+    }
+
+    // Trouver la position du dernier point dans le nom du fichier
+    size_t lastDot = filename.find_last_of('.');
+    if (lastDot == string::npos || lastDot == 0) {
+        return ""; // Aucune extension trouvée ou nom de fichier commençant par un point
+    }
+
+    // Extraire et retourner l'extension
+    return filename.substr(lastDot + 1);
+} //----- Fin de Méthode
+
+bool ApacheLogData::TargetIsDirectory() const
+{
+    return !GetTargetFromRequest().empty() && (GetTargetFromRequest().back() == '/' || GetTargetFromRequest().back() == '\\');
+}
+
+string ApacheLogData::GetDocumentFromReferer() const
+// Algorithme :
+//
+{
+    // Trouver la position de "http://", ou "https://"
+    size_t startPos = referer.find("://");
+
+    // Si "://" est trouvé, décaler le curseur pour sauter "://"
+    if (startPos != string::npos) {
+        startPos += 3; // "://"
+    } else {
+        // Si "://" n'est pas trouvé, l'URL est mal formée
+        return "-";
+    }
+
+    // Trouver la position du premier "/" après le nom de domaine
+    size_t slashPos = referer.find("/", startPos);
+
+    // Si "/" est trouvé, extraire la partie après le "/"
+    if (slashPos != string::npos) 
+    {
+        return referer.substr(slashPos);  
+    }
+
+    // Si "/" n'est pas trouvé, il n'y a pas de chemin
+    return "-";
+} //----- Fin de Méthode
+
+string ApacheLogData::GetDomainFromReferer() const 
+// Algorithme :
+//
+{
+    // Trouver la position après "http://" ou "https://"
+    string::size_type startPos = referer.find("://");
+    if (startPos == string::npos) {
+        return "-"; // Pas un URL valide
+    }
+    startPos += 3; // Sauter "://"
+
+    // Trouver la fin du domaine (soit le premier '/' ou la fin de la chaîne)
+    string::size_type endPos = referer.find('/', startPos);
+    if (endPos == string::npos) {
+        endPos = referer.length(); // Si aucun '/' n'est trouvé
+    }
+
+    // Extraire le domaine
+    return referer.substr(startPos, endPos - startPos);
+} //----- Fin de Méthode
+
+
+void ApacheLogData::SetIpAddress(const string& ip)
 {
     ipAddress = ip;
 } //----- Fin de Méthode
 
-void ApacheLogData::SetUserLogname(const std::string& name)
+void ApacheLogData::SetUserLogname(const string& name)
 {
     userLogname = name;
 } //----- Fin de Méthode
 
-void ApacheLogData::SetUserAuthName(const std::string& name)
+void ApacheLogData::SetUserAuthName(const string& name)
 {
     userAuthName = name;
 } //----- Fin de Méthode
 
-void ApacheLogData::SetDateTime(const std::string& dt)
+void ApacheLogData::SetDateTime(const string& dt)
 {
     date = dt;
 } //----- Fin de Méthode
 
-void ApacheLogData::SetRequest(const std::string& req)
+void ApacheLogData::SetRequest(const string& req)
 {
     request = req;
 } //----- Fin de Méthode
@@ -127,16 +235,15 @@ void ApacheLogData::SetDataSize(int size)
     dataSize = size;
 } //----- Fin de Méthode
 
-void ApacheLogData::SetReferer(const std::string& ref)
+void ApacheLogData::SetReferer(const string& ref)
 {
     referer = ref;
 } //----- Fin de Méthode
 
-void ApacheLogData::SetNavigator(const std::string& agent)
+void ApacheLogData::SetNavigator(const string& agent)
 {
     navigator = agent;
 } //----- Fin de Méthode
-
 
 
 //------------------------------------------------- Surcharge d'opérateurs
@@ -158,7 +265,7 @@ ApacheLogData & ApacheLogData::operator = ( const ApacheLogData & unApacheLogDat
     return *this;
 } //----- Fin de operator =
 
-std::ostream & operator << (std::ostream & os, const ApacheLogData & logData)
+ostream & operator << (ostream & os, const ApacheLogData & logData)
 // Algorithme :
 //
 {

@@ -27,14 +27,16 @@ using namespace std;
 //----------------------------------------------------------------- PUBLIC
 
 //----------------------------------------------------- Méthodes publiques
-int AnalogControl::Run (const int argc, char ** argv)
+
+AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
 // Algorithme :
 // 
 {
     if (argc < 2)
     {
         cerr << "Usage: " << argv[0] << " [options] logfilename.log" << endl;
-        return -1;
+        cerr << "Use --help for more information" << endl;
+        return AnalogReturnCode::AC_INVALID_ARGUMENT_COUNT;
     }
 
     // Variables for options
@@ -42,7 +44,9 @@ int AnalogControl::Run (const int argc, char ** argv)
     option_e = false;
     option_t = false;
     option_d = false;
+    option_n = false;
 
+    n = 10;
     // Log file name (last required argument)
     string logFileName;
     bool logFileNameSet = false;
@@ -51,7 +55,22 @@ int AnalogControl::Run (const int argc, char ** argv)
     {
         string arg = argv[i];
 
-        if (arg == "-g")
+        if (arg == "-h" || arg == "--help")
+        {
+            cout << "Usage: " << argv[0] << " [options] logfilename.log" << endl;
+            cout << "Available options:" << endl;
+            cout << "  -g <file.dot>   Generates a .dot file for GraphViz" << endl;
+            cout << "  -e              Excludes static files (CSS, JS, images, etc.)" << endl;
+            cout << "  -t <hour>       Filters requests by hour (0-23)" << endl;
+            cout << "  -d <domain>     Analyzes requests only from the specified domain" << endl;
+            cout << "  -n <number>     Displays the n most visited pages" << endl;
+            cout << "  -h, --help      Displays this help" << endl;
+
+            cout << "The default domain name is \"intranet-if.insa-lyon.fr\". You can modify it in the file 'config/target_domain.txt'" << endl;
+
+            return AnalogReturnCode::AC_SUCCESS;
+        }
+        else if (arg == "-g")
         {
             if (i + 1 < argc)
             {
@@ -61,7 +80,8 @@ int AnalogControl::Run (const int argc, char ** argv)
             else
             {
                 cerr << "Error: -g option requires a .dot filename" << endl;
-                return -1;
+                cerr << "Use --help for more information" << endl;
+                return AnalogReturnCode::AC_MISSING_ARGUMENT;
             }
         }
         else if (arg == "-e")
@@ -73,18 +93,31 @@ int AnalogControl::Run (const int argc, char ** argv)
             if (i + 1 < argc)
             {
                 option_t = true;               
-                hour = stoi(argv[++i]);
-
-                if (hour < 0 || hour > 23)
+                try
                 {
-                    cerr << "Error: -t option requires a valid hour between 0 and 23" << endl;
-                    return -1;
+                    hour = stoi(argv[++i]);
+                    
+                    if (hour < 0 || hour > 23)
+                    {
+                        cerr << "Error: -t option requires a valid hour between 0 and 23" << endl;
+                        return AnalogReturnCode::AC_INVALID_TIME_VALUE;
+                    }
+                    else
+                    {
+                        cout << "Warning: only hits between " << hour << "h and " << (hour + 1)%24 << "h have been taken into account" << endl;
+                    }
+                }
+                catch (const std::invalid_argument &)
+                {
+                    cerr << "Error: -t option requires a numeric hour value" << endl;
+                    return AnalogReturnCode::AC_INVALID_TIME_VALUE;
                 }
             }
             else
             {
                 cerr << "Error: -t option requires an hour value" << endl;
-                return -1;
+                cerr << "Use --help for more information" << endl;
+                return AnalogReturnCode::AC_MISSING_ARGUMENT;
             }
         }
         else if (arg == "-d")
@@ -97,13 +130,47 @@ int AnalogControl::Run (const int argc, char ** argv)
             else
             {
                 cerr << "Error: -d option requires a domain name" << endl;
-                return -1;
+                cerr << "Use --help for more information" << endl;
+                return AnalogReturnCode::AC_MISSING_ARGUMENT;
+            }
+        }
+        else if (arg == "-n")
+        {
+            if (i + 1 < argc)
+            {
+                option_n = true;           
+                try
+                {
+                    n = stoi(argv[++i]);
+                    if (n <= 0)
+                    {
+                        cerr << "Error: -n option requires a valid value greater than 0" << endl;
+                        return AnalogReturnCode::AC_INVALID_NUMERIC_VALUE;
+                    }
+                }
+                catch (const std::invalid_argument &)
+                {
+                    cerr << "Error: -n option requires a numeric value" << endl;
+                    return AnalogReturnCode::AC_INVALID_NUMERIC_VALUE;
+                }
+                catch (const std::out_of_range &)
+                {
+                    cerr << "Error: -n option requires value within a valid range ( "<< sizeof(hour)<<" bytes )" << endl;
+                    return AnalogReturnCode::AC_INVALID_NUMERIC_VALUE;
+                }
+            }
+            else
+            {
+                cerr << "Error: -n option requires a value" << endl;
+                cerr << "Use --help for more information" << endl;
+                return AnalogReturnCode::AC_MISSING_ARGUMENT;
             }
         }
         else if (arg[0] == '-')
         {
             cerr << "Unknown option: " << arg << endl;
-            return -1;
+            cerr << "Use --help for more information" << endl;
+            return AnalogReturnCode::AC_UNKNOWN_OPTION;
         }
         else if(!logFileNameSet)
         {
@@ -113,50 +180,68 @@ int AnalogControl::Run (const int argc, char ** argv)
         else
         {
             cerr << "Too many arguments" << endl;
-            return -1;
+            cerr << "Use --help for more information" << endl;
+            return AnalogReturnCode::AC_TOO_MANY_ARGUMENTS;
         }
     }
 
     if (logFileName.empty())
     {
-        cerr << "Error: log file is required." << endl;
-        return -1;
+        cerr << "Error: log file is empty." << endl;
+        cerr << "Use --help for more information" << endl;
+        return AnalogReturnCode::AC_MISSING_LOG_FILE;
     }
     
     // Read the log file
-    ReadFile(logFileName);
+    AnalogReturnCode code = ReadFile(logFileName);
+    if(code != AnalogReturnCode::AC_SUCCESS)
+    {
+        return code;
+    }
+
     AnalogAnalyse A; 
 
     // If -g is enabled, generate a GraphViz file
     if (option_g)
     {
         cout << "Generating .dot file: " << dotFileName << endl;
-        //  A.creationficdot(data,dotFileName);
+         A.creationficdot(data,dotFileName);
     }
-    else
-    {
-        // A.analysetopn(data,10);
-
-    }
-   
-    return 0;
+    
+    
+    A.analysetopn(data,n);
+    
+    return AnalogReturnCode::AC_SUCCESS;
 
 } //----- Fin de Run
 
-int AnalogControl::ReadFile ( const string & filename )
+AnalogReturnCode AnalogControl::ReadFile ( const string & filename )
 // Algorithme :
 //
 {
     ApacheLogReader reader;
-    reader.OpenFile(filename);
+    
+    if(reader.OpenFile(filename) == ApacheLogReaderReturnCode::ALR_FILE_NOT_FOUND)
+    {
+        return AnalogReturnCode::AC_MISSING_LOG_FILE;
+    }
 
     if(!option_d)
-    {
-        ifstream file ("config/target_domain.txt");
+    {   
+        string domain_config_file = "./config/target_domain.txt";
+        ifstream file (domain_config_file);
         if(!file.is_open())
         {
-            cerr << "Domain config file ( target_domain.txt ) is missing..." << endl;
-            return -1;
+            file.open("../"+domain_config_file);
+            if(!file.is_open())
+            {
+                file.open("../../"+domain_config_file);
+                if(!file.is_open())
+                {
+                    cerr << "Error : Domain config file ( config/target_domain.txt ) is missing." << endl;
+                    return AnalogReturnCode::AC_MISSING_CONFIG_FILE;
+                }
+            }
         }
         file>>domain;
         file.close();
@@ -168,13 +253,19 @@ int AnalogControl::ReadFile ( const string & filename )
 
         ApacheLogData log = reader.ReadLine();
 
-        string target = getTargetFromRequest(log.GetRequest());
+        string target = log.GetTargetFromRequest();
 
+        if(log.GetMethodFromRequest() != "GET" || log.TargetIsDirectory())
+        {
+            continue;
+        }
+    
         if(option_e)
         {
-            if(endsWith(target,".css")   || endsWith(target,".js") ||
-               endsWith(target,".png")  || endsWith(target,".gif")||
-               endsWith(target,".jpeg") || endsWith(target,".jpg"))
+            if( log.GetFileExtension()=="css"  || log.GetFileExtension()=="js"  ||
+                log.GetFileExtension()=="png"  || log.GetFileExtension()=="gif" ||
+                log.GetFileExtension()=="jpeg" || log.GetFileExtension()=="jpg" ||
+                log.GetFileExtension()=="ico")
             {
                 continue;
             }
@@ -182,13 +273,9 @@ int AnalogControl::ReadFile ( const string & filename )
 
         if(option_t)
         {
-         
-
-            // Le format attendu est "[08/Sep/2012:11:15:00 +0200]"
-
+    
             size_t start = log.GetDate().find(':');
-            int heure_date = stoi(log.GetDate().substr(start + 1, 8));
-            
+            int heure_date = stoi(log.GetDate().substr(start + 1, 2));
 
             if (!(hour <= heure_date && heure_date < hour + 1))
             {
@@ -196,24 +283,14 @@ int AnalogControl::ReadFile ( const string & filename )
             }
         }
 
-        string refererDomain;
-        if(option_d)
+        string refererDomain = log.GetDomainFromReferer();
+        if(refererDomain != domain)
         {
-            refererDomain = getDomainFromReferer(log.GetReferer());
-            if(refererDomain != domain){
-                continue;
-            }
-        }
-        else
-        {
-            refererDomain = getDomainFromReferer(log.GetReferer());
-            if(refererDomain != domain)
-            {
-                continue;
-            }
+            continue;
         }
         
-        string referer = getDocumentFromReferer(log.GetReferer());
+        
+        string referer = log.GetDocumentFromReferer();
 
         // On vérifie si la cible existe dans la map principale
         if (data.find(target) != data.end()) {
@@ -246,7 +323,7 @@ int AnalogControl::ReadFile ( const string & filename )
     //     }
     // }
 
-    return 0;
+    return AnalogReturnCode::AC_SUCCESS;
 
 } //----- Fin de ReadFile
 
@@ -282,70 +359,3 @@ AnalogControl::~AnalogControl ( )
 //------------------------------------------------------------------ PRIVE
 
 //----------------------------------------------------- Méthodes protégées
-
-bool AnalogControl::endsWith(const string& str, const string& suffix)
-{
-    if (str.size() < suffix.size()) return false;
-    return equal(suffix.rbegin(), suffix.rend(), str.rbegin());
-}
-
-string AnalogControl::getDomainFromReferer(const string& referer) 
-{
-    // Trouver la position après "http://" ou "https://"
-    string::size_type startPos = referer.find("://");
-    if (startPos == string::npos) {
-        return ""; // Pas un URL valide
-    }
-    startPos += 3; // Sauter "://"
-
-    // Trouver la fin du domaine (soit le premier '/' ou la fin de la chaîne)
-    string::size_type endPos = referer.find('/', startPos);
-    if (endPos == string::npos) {
-        endPos = referer.length(); // Si aucun '/' n'est trouvé
-    }
-
-    // Extraire le domaine
-    return referer.substr(startPos, endPos - startPos);
-}
-
-string AnalogControl::getDocumentFromReferer(const string& referer)
-{
-    // Trouver la position de "http://", ou "https://"
-    size_t startPos = referer.find("://");
-
-    // Si "://" est trouvé, décaler le curseur pour sauter "://"
-    if (startPos != std::string::npos) {
-        startPos += 3; // "://"
-    } else {
-        // Si "://" n'est pas trouvé, l'URL est mal formée
-        return "";
-    }
-
-    // Trouver la position du premier "/" après le nom de domaine
-    size_t slashPos = referer.find("/", startPos);
-
-    // Si "/" est trouvé, extraire la partie après le "/"
-    if (slashPos != std::string::npos) 
-    {
-        return referer.substr(slashPos);  
-    }
-
-    // Si "/" n'est pas trouvé, il n'y a pas de chemin
-    return "";
-}
-
-string AnalogControl::getTargetFromRequest(const string& request)
-{
-    size_t startPos = request.find(" ") + 1; // Après le premier espace, pour l'URL
-    
-    // Trouver la position du dernier espace avant la version HTTP
-    size_t endPos = request.rfind(" ");
-    
-    // Si les positions sont valides, on extrait l'URL
-    if (startPos != std::string::npos && endPos != std::string::npos && startPos < endPos) {
-        return request.substr(startPos, endPos - startPos); // Extrait l'URL
-    }
-    
-    // Si les positions ne sont pas valides, retourner une chaîne vide
-    return "";
-}

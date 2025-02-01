@@ -49,7 +49,7 @@ string AnalogAnalyse::retrouvercorrespondancenode(const string& m, const vector<
     }
     if(a==0) 
     {
-        return "erreur";
+        return "Error";
     }
     return result;
 }
@@ -59,7 +59,7 @@ int AnalogAnalyse::analysetopn(const logsData& data, int n) const
     //typedef map< string, pair< map<string,int> ,int>> logsData; 
     if (data.empty())
     {
-        cout<< "Données vides" <<endl;
+        cout<< "No Data Available" <<endl;
         return 1;
     }
     
@@ -78,7 +78,7 @@ int AnalogAnalyse::analysetopn(const logsData& data, int n) const
 
     sort(valtriee.begin(),valtriee.end(),compareavecsecond);// trier entre une plage donnée avec un critère spécifique ici la fonction compareavecsecond
     
-    for ( vector<pair<int, string>>::iterator i = valtriee.begin();  i != valtriee.begin()+ n && i != valtriee.end() ; i++) 
+    for ( vector<pair<int, string>>::iterator i = valtriee.begin();  i != valtriee.end() && i != valtriee.begin()+ n ; i++) 
     {
         //afficher le top n sites cibles avec le plus de hits
         cout << i->second << " (" << i->first << " hits)" << endl;
@@ -92,15 +92,16 @@ int AnalogAnalyse::creationficdot(const logsData &data,string filename) const
         //typedef map< string, pair< map<string,int> ,int>> logsData; 
      if (data.empty())
     {
-        cout<< "Données vides" <<endl;
+        cout<< "No Data Available" <<endl;
         return 1;
     }
     ofstream fichier(filename);
     if (!fichier.is_open()) 
     {
-        cerr << "Erreur : Impossible d'ouvrir le fichier .dot pour écrire." << endl;
+        cerr << "Error : Unable to open .dot file for writing." << endl;
         return 1 ;
     }
+
     vector<pair<string, string>> labelnode; // conteneur temporaire pour stocker les nodes et leurs noms de sites correspondant
    
 
@@ -117,7 +118,7 @@ for (logsData::const_iterator it = debut; it != fin; ++it)
         map<string, int> internalMap = secondPair.first;
         //ajout de tous les sites cibles au nodes
            string sitecible = it->first; // Clé du premier niveau le site cible(string)
-                fichier<< "node" << i << " [label="<< sitecible <<"];" <<endl;
+                fichier<< "node" << i << " [label=\""<< sitecible <<"\"];" <<endl;
                 string nodei= "node" + to_string(i);
                 labelnode.push_back(make_pair(nodei, sitecible)); 
                 i++;

@@ -13,7 +13,6 @@
 //-------------------------------------------------------- Include système
 using namespace std;
 #include <iostream>
-#include <regex>
 //------------------------------------------------------ Include personnel
 #include "./ApacheLogReader.h"
 
@@ -23,43 +22,43 @@ using namespace std;
 
 //----------------------------------------------------- Méthodes publiques
 
-bool ApacheLogReader::OpenFile (const std::string& filename)
+ApacheLogReaderReturnCode ApacheLogReader::OpenFile (const std::string& filename)
 // Algorithme :
 //
 {
     if (file.is_open()) {
         std::cerr << "File is already open." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_ALREADY_OPEN;
     }
 
     file.open(filename, std::ios::in);
 
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filename << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_NOT_FOUND;
     }
 
-    return true;
+    return ApacheLogReaderReturnCode::ALR_SUCCESS;
 } //----- Fin de OpenFile
 
 
-bool ApacheLogReader::CloseFile()
+ApacheLogReaderReturnCode ApacheLogReader::CloseFile()
 // Algorithme :
 //
 {
     if (!file.is_open()) {
         std::cerr << "No file is currently open." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_NOT_OPEN;
     }
 
     file.close();
 
     if (file.is_open()) {
         std::cerr << "Failed to close the file." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_CLOSE_ERROR;
     }
 
-    return true;
+    return ApacheLogReaderReturnCode::ALR_SUCCESS;
 } //----- Fin de CloseFile
 
 
@@ -76,18 +75,18 @@ bool ApacheLogReader::EndOfFile()
 } //----- Fin de EndOfFile
 
 
-bool ApacheLogReader::ResetReading()
+ApacheLogReaderReturnCode ApacheLogReader::ResetReading()
 // Algorithme :
 //
 {
     if (!file.is_open()) {
         std::cerr << "No file is currently open to reset." << std::endl;
-        return false;
+        return ApacheLogReaderReturnCode::ALR_FILE_NOT_OPEN;
     }
 
     file.clear(); // Efface les flags d'erreur potentiels (EOF, etc.)
     file.seekg(0, std::ios::beg);
-    return true;
+    return ApacheLogReaderReturnCode::ALR_SUCCESS;
 } //----- Fin de ResetReading
 
 ApacheLogData ApacheLogReader::ReadLine()
@@ -136,12 +135,25 @@ ApacheLogData ApacheLogReader::ReadLine()
     // Récupérer le code de statut (après la requête)
     startPos = endPos + 2; // après les guillemets et l'espace
     endPos = logLine.find(' ', startPos);
-    logData.SetStatusCode(std::stoi(logLine.substr(startPos, endPos - startPos)));
+    try {
+        logData.SetStatusCode(std::stoi(logLine.substr(startPos, endPos - startPos)));
+    } catch (const std::invalid_argument& e) {
+        logData.SetDataSize(520);               // 520 = unkown error
+    } catch (const std::out_of_range& e) {
+        logData.SetDataSize(520);
+    }
 
     // Récupérer la taille des données
     startPos = endPos + 1;
     endPos = logLine.find(' ', startPos);
-    logData.SetDataSize(std::stoi(logLine.substr(startPos, endPos - startPos)));
+  
+    try {
+        logData.SetDataSize(std::stoi(logLine.substr(startPos, endPos - startPos)));
+    } catch (const std::invalid_argument& e) {
+        logData.SetDataSize(0);
+    } catch (const std::out_of_range& e) {
+        logData.SetDataSize(0);
+    }
 
     // Récupérer le référent (tout entre guillemets)
     startPos = logLine.find('"', endPos) + 1; // juste après le guillemet
@@ -152,6 +164,8 @@ ApacheLogData ApacheLogReader::ReadLine()
     startPos = logLine.find('"', endPos) + 1;
     logData.SetNavigator(logLine.substr(startPos));
 
+    // cout<<"READER : log readed = \r\n"<<logData<<endl;
+    
     return logData;
 } //----- Fin de ReadLine
 

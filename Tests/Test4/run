@@ -1,1 +1,1 @@
-./analog.exe -e Tests/Test4/fichier.txt 
+../../bin/analog fichier.log -g dotfile.dot

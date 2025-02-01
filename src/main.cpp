@@ -7,4 +7,3 @@ int main(int argc, char** argv)
     AnalogControl ac;
     return ac.Run(argc,argv);
 }
-

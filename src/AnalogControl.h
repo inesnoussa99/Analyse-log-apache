@@ -16,6 +16,29 @@
 #include "ApacheLogReader.h"
 //------------------------------------------------------------- Constantes
 
+enum AnalogReturnCode
+{
+
+    AC_SUCCESS, // 0
+
+    AC_INVALID_ARGUMENT_COUNT, // 1
+
+    AC_MISSING_ARGUMENT, // 2
+
+    AC_INVALID_TIME_VALUE, // 3
+
+    AC_INVALID_NUMERIC_VALUE, // 4
+
+    AC_UNKNOWN_OPTION, // 5
+
+    AC_TOO_MANY_ARGUMENTS, // 6
+
+    AC_MISSING_LOG_FILE, // 7
+
+    AC_MISSING_CONFIG_FILE // 8
+
+};
+
 //------------------------------------------------------------------ Types
 
 // Structure pour stocker les données des logs

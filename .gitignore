@@ -2,3 +2,5 @@
 obj/*
 bin/*
 analog
+analog.exe
+*.dot
