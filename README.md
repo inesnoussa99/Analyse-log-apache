@@ -13,7 +13,7 @@
 Avant d'utiliser **Analog**, assurez-vous que votre environnement possède les éléments suivants :
 
 - Un compilateur compatible avec C++11 ou supérieur (g++, clang, etc.)
-- CMake pour la compilation (optionnel)
+- Editer le fichier config/target_domain.txt pour y écrire un nom de domaine de la forme "domain_name.com" (par défaut le nom de domaine est 'intranet-if.insa-lyon.fr')
 - Un fichier de log Apache valide
 
 ## Compilation
@@ -22,6 +22,7 @@ Pour compiler le projet, utilisez la commande suivante :
 ```sh
 make
 ```
+
 ## Utilisation
 Lancer l'exécutable en ligne de commande avec les options suivantes :
 ```sh
@@ -32,6 +33,7 @@ bin/analog [options] logfilename.log
 
 | Option | Description |
 |--------|-------------|
+| -h ou --help | Affiche le manuel d'utilisation |
 | -g <file.dot> | Génère un fichier .dot pour visualisation avec GraphViz |
 | -e | Exclut certains fichiers statiques (CSS, JS, images, etc.) |
 | -t <heure> | Filtre les requêtes selon une heure donnée (0-23) |

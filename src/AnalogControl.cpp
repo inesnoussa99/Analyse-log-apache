@@ -35,6 +35,7 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
     if (argc < 2)
     {
         cerr << "Usage: " << argv[0] << " [options] logfilename.log" << endl;
+        cerr << "Use --help for more information" << endl;
         return AnalogReturnCode::AC_INVALID_ARGUMENT_COUNT;
     }
 
@@ -54,7 +55,22 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
     {
         string arg = argv[i];
 
-        if (arg == "-g")
+        if (arg == "-h" || arg == "--help")
+        {
+            cout << "Usage: " << argv[0] << " [options] logfilename.log" << endl;
+            cout << "Available options:" << endl;
+            cout << "  -g <file.dot>   Generates a .dot file for GraphViz" << endl;
+            cout << "  -e              Excludes static files (CSS, JS, images, etc.)" << endl;
+            cout << "  -t <hour>       Filters requests by hour (0-23)" << endl;
+            cout << "  -d <domain>     Analyzes requests only from the specified domain" << endl;
+            cout << "  -n <number>     Displays the n most visited pages" << endl;
+            cout << "  -h, --help      Displays this help" << endl;
+
+            cout << "The default domain name is \"intranet-if.insa-lyon.fr\". You can modify it in the file 'config/target_domain.txt'" << endl;
+
+            return AnalogReturnCode::AC_SUCCESS;
+        }
+        else if (arg == "-g")
         {
             if (i + 1 < argc)
             {
@@ -64,6 +80,7 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
             else
             {
                 cerr << "Error: -g option requires a .dot filename" << endl;
+                cerr << "Use --help for more information" << endl;
                 return AnalogReturnCode::AC_MISSING_ARGUMENT;
             }
         }
@@ -99,6 +116,7 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
             else
             {
                 cerr << "Error: -t option requires an hour value" << endl;
+                cerr << "Use --help for more information" << endl;
                 return AnalogReturnCode::AC_MISSING_ARGUMENT;
             }
         }
@@ -112,6 +130,7 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
             else
             {
                 cerr << "Error: -d option requires a domain name" << endl;
+                cerr << "Use --help for more information" << endl;
                 return AnalogReturnCode::AC_MISSING_ARGUMENT;
             }
         }
@@ -143,12 +162,14 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
             else
             {
                 cerr << "Error: -n option requires a value" << endl;
+                cerr << "Use --help for more information" << endl;
                 return AnalogReturnCode::AC_MISSING_ARGUMENT;
             }
         }
         else if (arg[0] == '-')
         {
             cerr << "Unknown option: " << arg << endl;
+            cerr << "Use --help for more information" << endl;
             return AnalogReturnCode::AC_UNKNOWN_OPTION;
         }
         else if(!logFileNameSet)
@@ -159,6 +180,7 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
         else
         {
             cerr << "Too many arguments" << endl;
+            cerr << "Use --help for more information" << endl;
             return AnalogReturnCode::AC_TOO_MANY_ARGUMENTS;
         }
     }
@@ -166,6 +188,7 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
     if (logFileName.empty())
     {
         cerr << "Error: log file is empty." << endl;
+        cerr << "Use --help for more information" << endl;
         return AnalogReturnCode::AC_MISSING_LOG_FILE;
     }
     
