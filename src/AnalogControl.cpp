@@ -200,7 +200,6 @@ AnalogReturnCode AnalogControl::ReadFile ( const string & filename )
     
     if(reader.OpenFile(filename) == ApacheLogReaderReturnCode::ALR_FILE_NOT_FOUND)
     {
-        cerr << "Error : log file does not exist." << endl;
         return AnalogReturnCode::AC_MISSING_LOG_FILE;
     }
 
