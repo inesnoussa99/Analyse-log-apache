@@ -37,7 +37,7 @@ bin/analog [options] logfilename.log
 | -g <file.dot> | Génère un fichier .dot pour visualisation avec GraphViz |
 | -e | Exclut certains fichiers statiques (CSS, JS, images, etc.) |
 | -t heure | Filtre les requêtes selon une heure donnée (0-23) |
-| -d domaine | Prend en compte uniquement les requêtes du domaine spécifié |
+| -d domaine | Prend en compte uniquement les requêtes du domaine spécifié sous la forme "domaine.com" |
 | -n nombre	| Affiche les n pages les plus visitées |
 
 ## Auteurs
