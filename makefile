@@ -1,5 +1,5 @@
 # Variables
-CXX = g++
+CXX = g++ # -DMAP
 CXXFLAGS = -Wall -Wextra -std=c++17 -I./src -g
 LDFLAGS = 
 SRC_DIR = src
