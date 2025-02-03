@@ -1,9 +1,10 @@
 /*************************************************************************
-                           ApacheLogData  -  description
+                           ApacheLogData  -  
+                           Stockage des infos d'une ligne de log Apache
                              -------------------
-    début                : $DATE$
-    copyright            : (C) $YEAR$ par $AUTHOR$
-    e-mail               : $EMAIL$
+    début                : 2025
+    copyright            : (C) 2025 par CHEBBI Ines
+                           ines.chebbi@insa-lyon.fr
 *************************************************************************/
 
 //---------- Réalisation de la classe <ApacheLogData> (fichier ApacheLogData.cpp) ------------

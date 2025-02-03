@@ -1,9 +1,12 @@
 /*************************************************************************
-                           AnalogControl  -  description
+                           AnalogControl  -  Classe "directrice"
+                           Elle récupère la ligne de commande, et execute les instructions
+                           et stocke les données.
                              -------------------
-    début                : $DATE$
-    copyright            : (C) $YEAR$ par $AUTHOR$
-    e-mail               : $EMAIL$
+    début                : 2025
+    copyright            : (C) 2025 par NAJI Adam
+    e-mail               : adam-yassine.naji@insa-lyon.fr 
+
 *************************************************************************/
 
 //---------- Réalisation de la classe <AnalogControl> (fichier AnalogControl.cpp) ------------
@@ -215,6 +218,39 @@ AnalogReturnCode AnalogControl::Run (const int argc, char ** argv)
 
 } //----- Fin de Run
 
+
+//------------------------------------------------- Surcharge d'opérateurs
+
+// AnalogControl & AnalogControl::operator = ( const AnalogControl & unAnalogControl )
+
+//-------------------------------------------- Constructeurs - destructeur
+
+// AnalogControl::AnalogControl ( const AnalogControl & unAnalogControl )
+
+AnalogControl::AnalogControl ( )
+// Algorithme :
+//
+{
+#ifdef MAP
+    cout << "Appel au constructeur de <AnalogControl>" << endl;
+#endif
+} //----- Fin de AnalogControl
+
+
+AnalogControl::~AnalogControl ( )
+// Algorithme :
+//
+{
+#ifdef MAP
+    cout << "Appel au destructeur de <AnalogControl>" << endl;
+#endif
+} //----- Fin de ~AnalogControl
+
+
+//------------------------------------------------------------------ PRIVE
+
+//----------------------------------------------------- Méthodes protégées
+
 AnalogReturnCode AnalogControl::ReadFile ( const string & filename )
 // Algorithme :
 //
@@ -326,36 +362,3 @@ AnalogReturnCode AnalogControl::ReadFile ( const string & filename )
     return AnalogReturnCode::AC_SUCCESS;
 
 } //----- Fin de ReadFile
-
-
-//------------------------------------------------- Surcharge d'opérateurs
-
-// AnalogControl & AnalogControl::operator = ( const AnalogControl & unAnalogControl )
-
-//-------------------------------------------- Constructeurs - destructeur
-
-// AnalogControl::AnalogControl ( const AnalogControl & unAnalogControl )
-
-AnalogControl::AnalogControl ( )
-// Algorithme :
-//
-{
-#ifdef MAP
-    cout << "Appel au constructeur de <AnalogControl>" << endl;
-#endif
-} //----- Fin de AnalogControl
-
-
-AnalogControl::~AnalogControl ( )
-// Algorithme :
-//
-{
-#ifdef MAP
-    cout << "Appel au destructeur de <AnalogControl>" << endl;
-#endif
-} //----- Fin de ~AnalogControl
-
-
-//------------------------------------------------------------------ PRIVE
-
-//----------------------------------------------------- Méthodes protégées

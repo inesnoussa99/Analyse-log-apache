@@ -1,13 +1,14 @@
 /*************************************************************************
-                           ApacheLogReader  -  description
+                           ApacheLogData  -  
+                           Stockage des infos d'une ligne de log Apache
                              -------------------
-    début                : $DATE$
-    copyright            : (C) $YEAR$ par $AUTHOR$
-    e-mail               : $EMAIL$
+    début                : 2025
+    copyright            : (C) 2025 par CHEBBI Ines
+                           ines.chebbi@insa-lyon.fr
 *************************************************************************/
 
 //---------- Interface de la classe <ApacheLogReader> (fichier ApacheLogReader.h) ----------------
-#if !defined(APACHE_LOG_READER_H)
+#if ! defined ( APACHE_LOG_READER_H )
 #define APACHE_LOG_READER_H
 
 //--------------------------------------------------- Interfaces utilisées
@@ -17,80 +18,93 @@
 //------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
+enum ApacheLogReaderReturnCode {
 
+    ALR_SUCCESS, // 0
+
+    ALR_FILE_ALREADY_OPEN, // 1
+
+    ALR_FILE_NOT_FOUND, // 2
+
+    ALR_FILE_NOT_OPEN, // 3
+
+    ALR_FILE_CLOSE_ERROR // 4
+
+};
 //------------------------------------------------------------------------
 // Rôle de la classe <ApacheLogReader>
 //
-// Ouvre un fichier de logs Apache, lit les lignes et extrait les données.
+//
 //------------------------------------------------------------------------
 
 class ApacheLogReader
 {
-    //----------------------------------------------------------------- PUBLIC
+//----------------------------------------------------------------- PUBLIC
 
 public:
-    //----------------------------------------------------- Méthodes publiques
-    // Ouvre un fichier de logs
-    bool OpenFile(const std::string &filename);
+//----------------------------------------------------- Méthodes publiques
+
+    ApacheLogReaderReturnCode OpenFile(const std::string& filename);
     // Mode d'emploi :
     //
     // Contrat :
     //
-    // Ferme le fichier de logs
-    bool CloseFile();
+
+    ApacheLogReaderReturnCode CloseFile();
     // Mode d'emploi :
     //
     // Contrat :
     //
-    // Vérifie si la fin du fichier est atteinte
+
     bool EndOfFile();
     // Mode d'emploi :
     //
     // Contrat :
     //
-    // Réinitialise la lecture du fichier
-    bool ResetReading();
+    
+    ApacheLogReaderReturnCode ResetReading();
     // Mode d'emploi :
     //
     // Contrat :
     //
-    // Lit une ligne du fichier et retourne les données sous forme d'objet
+
     ApacheLogData ReadLine();
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    //------------------------------------------------- Surcharge d'opérateurs
+//------------------------------------------------- Surcharge d'opérateurs
 
-    // ApacheLogReader & operator = ( const ApacheLogReader & unApacheLogReader ); // Inutile ?
+    // ApacheLogReader & operator = ( const ApacheLogReader & unApacheLogReader ); 
 
-    //-------------------------------------------- Constructeurs - destructeur
+//-------------------------------------------- Constructeurs - destructeur
 
-    // ApacheLogReader ( const ApacheLogReader & unApacheLogReader ); // Inutile ?
-    // Constructeur par défaut
-    ApacheLogReader();
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-    // Destructeur
-    virtual ~ApacheLogReader();
+    // ApacheLogReader ( const ApacheLogReader & unApacheLogReader ); 
+
+    ApacheLogReader ( );
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    //------------------------------------------------------------------ PRIVE
+    virtual ~ApacheLogReader ( );
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+//------------------------------------------------------------------ PRIVE
     // Mode d'emploi (constructeur de copie) :
     //
     // Contrat :
     //
 
-    //----------------------------------------------------- Attributs protégés
-    std::ifstream file; // Fichier en cours de lecture
+//----------------------------------------------------- Attributs protégés
+    std::ifstream file;
 };
 
 //-------------------------------- Autres définitions dépendantes de <ApacheLogReader>
 
 #endif // APACHE_LOG_READER_H
+

@@ -1,9 +1,10 @@
 /*************************************************************************
-                           ApacheLogData  -  description
+                           ApacheLogData  -  
+                           Stockage des infos d'une ligne de log Apache
                              -------------------
-    début                : $DATE$
-    copyright            : (C) $YEAR$ par $AUTHOR$
-    e-mail               : $EMAIL$
+    début                : 2025
+    copyright            : (C) 2025 par CHEBBI Ines
+                           ines.chebbi@insa-lyon.fr
 *************************************************************************/
 
 //---------- Interface de la classe <ApacheLogData> (fichier ApacheLogData.h) ----------------
@@ -31,42 +32,39 @@ public:
 
     //------------------------------------------------------ Getters
     // Retourne l'adresse IP du client
-    const std::string &GetIpAddress() const;
+    std::string GetIpAddress() const;
     // Mode d'emploi :
     //
     // Contrat :
     //
     // Retourne le nom d'utilisateur logué
-    const std::string &GetUserLogname() const;
+    std::string GetUserLogname() const;
     // Mode d'emploi :
     //
     // Contrat :
     //
     // Retourne le nom d'utilisateur authentifié
-    const std::string &GetUserAuthName() const;
+    std::string GetUserAuthName() const;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
     // Retourne la date et l'heure de la requête
-
-    const std::string &GetDate() const;
+    std::string GetDate() const;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
     // Retourne la requête HTTP (méthode et ressource demandée)
-
-    const std::string &GetRequest() const;
+    std::string GetRequest() const;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
     // Retourne le code de statut HTTP
-
     int GetStatusCode() const;
     // Mode d'emploi :
     //
@@ -74,7 +72,6 @@ public:
     //
 
     // Retourne la taille des données transférées
-
     int GetDataSize() const;
     // Mode d'emploi :
     //
@@ -82,72 +79,88 @@ public:
     //
 
     // Retourne l'URL du référent (site d'origine)
-
-    const std::string &GetReferer() const;
+    std::string GetReferer() const;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
     // Retourne l'identification du navigateur utilisé
-
-    const std::string &GetNavigator() const;
+    std::string GetNavigator() const;
     // Mode d'emploi :
     //
     // Contrat :
     //
 
+    string GetTargetFromRequest() const;
+
+    string GetMethodFromRequest() const;
+
+    string GetFileExtension() const;
+
+    bool TargetIsDirectory() const;
+
+    string GetDocumentFromReferer() const;
+
+    string GetDomainFromReferer() const; 
     //------------------------------------------------------ Setters
 
     // Définit l'adresse IP
-
     void SetIpAddress(const std::string &ip);
     // Mode d'emploi :
     //
     // Contrat :
     //
+
     // Définit le nom d'utilisateur logué
     void SetUserLogname(const std::string &name);
     // Mode d'emploi :
     //
     // Contrat :
     //
+    
     // Définit le nom d'utilisateur authentifié
     void SetUserAuthName(const std::string &name);
     // Mode d'emploi :
     //
     // Contrat :
     //
+    
     // Définit la date et l'heure de la requête
     void SetDateTime(const std::string &dt);
     // Mode d'emploi :
     //
     // Contrat :
     //
+    
     // Définit la requête HTTP
     void SetRequest(const std::string &req);
     // Mode d'emploi :
     //
     // Contrat :
     //
+    
     // Définit le code de statut HTTP
     void SetStatusCode(int code);
     // Mode d'emploi :
     //
     // Contrat :
     //
+    
     // Définit la taille des données transférées
     void SetDataSize(int size);
     // Mode d'emploi :
     //
     // Contrat :
     //
+    
     // Définit l'URL du référent
     void SetReferer(const std::string &ref);
     // Mode d'emploi :
     //
     // Contrat :
     //
+    
     // Définit l'identification du navigateur
     void SetNavigator(const std::string &agent);
     // Mode d'emploi :
@@ -156,12 +169,14 @@ public:
     //
 
     //------------------------------------------------- Surcharge d'opérateurs
+
     // Opérateur d'affectation
     ApacheLogData &operator=(const ApacheLogData &unApacheLogData);
     // Mode d'emploi :
     //
     // Contrat :
     //
+
     // Surcharge de l'opérateur << pour afficher un log
     friend std::ostream &operator<<(std::ostream &os, const ApacheLogData &logData);
     // Mode d'emploi :
@@ -177,12 +192,14 @@ public:
     //
     // Contrat :
     //
+
     // Constructeur par défaut
     ApacheLogData();
     // Mode d'emploi :
     //
     // Contrat :
     //
+
     // Destructeur
     virtual ~ApacheLogData();
     // Mode d'emploi :

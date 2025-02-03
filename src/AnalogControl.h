@@ -1,13 +1,16 @@
 /*************************************************************************
-                           AnalogControl  -  description
+                           AnalogControl  -  Classe "directrice"
+                           Elle récupère la ligne de commande, et execute les instructions
+                           et stocke les données.
                              -------------------
-    début                : $DATE$
-    copyright            : (C) $YEAR$ par $AUTHOR$
-    e-mail               : $EMAIL$
+    début                : 2025
+    copyright            : (C) 2025 par NAJI Adam
+    e-mail               : adam-yassine.naji@insa-lyon.fr 
+
 *************************************************************************/
 
 //---------- Interface de la classe <AnalogControl> (fichier AnalogControl.h) ----------------
-#if !defined(ANALOG_CONTROL_H)
+#if ! defined ( ANALOG_CONTROL_H )
 #define ANALOG_CONTROL_H
 
 //--------------------------------------------------- Interfaces utilisées
@@ -16,9 +19,8 @@
 #include "ApacheLogReader.h"
 //------------------------------------------------------------- Constantes
 
-enum AnalogReturnCode
-{
-
+enum AnalogReturnCode {
+    
     AC_SUCCESS, // 0
 
     AC_INVALID_ARGUMENT_COUNT, // 1
@@ -41,102 +43,75 @@ enum AnalogReturnCode
 
 //------------------------------------------------------------------ Types
 
-// Structure pour stocker les données des logs
+typedef std::map<std::string,std::pair<std::map<std::string,int>,int>> logsData;
 
-typedef std::map<std::string, std::pair<std::map<std::string, int>, int>> logsData;
 
 //------------------------------------------------------------------------
 // Rôle de la classe <AnalogControl>
-// Gère la lecture des fichiers logs, applique des options de filtrage et
-// stocke les données pour analyse.
+//  
+//  Récupérer la commande entrée par l'utilisateur, 
+//  Utiliser la classe ApacheLogReader pour récuperer les données utiles,
+//  Utiliser la classe AnalogAnalyse pour calculer les stats et générer les fichiers dot
 //------------------------------------------------------------------------
 
 class AnalogControl
 {
-    //----------------------------------------------------------------- PUBLIC
+//----------------------------------------------------------------- PUBLIC
 
 public:
-    //----------------------------------------------------- Méthodes publiques
+//----------------------------------------------------- Méthodes publiques
 
-    // Lance l'exécution du programme avec les arguments donnés
-    int Run(const int argc, char **argv);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-    // Lit un fichier de logs et stocke les données
-
-    int ReadFile(const std::string &filename);
+    AnalogReturnCode Run (const int argc, char** argv);
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    //------------------------------------------------- Surcharge d'opérateurs
 
-    // AnalogControl & operator = ( const AnalogControl & unAnalogControl );
+//------------------------------------------------- Surcharge d'opérateurs
 
-    //-------------------------------------------- Constructeurs - destructeur
+    // AnalogControl & operator = ( const AnalogControl & unAnalogControl ); 
+    
+//-------------------------------------------- Constructeurs - destructeur
+    
+    // AnalogControl ( const AnalogControl & unAnalogControl ); 
+    
 
-    // AnalogControl ( const AnalogControl & unAnalogControl );
-    // Constructeur par défaut
-    AnalogControl();
+    AnalogControl ( );
     // Mode d'emploi :
     //
     // Contrat :
     //
-    // Destructeur
-    virtual ~AnalogControl();
+
+    virtual ~AnalogControl ( );
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    //------------------------------------------------------------------ PRIVE
+//------------------------------------------------------------------ PRIVE
 
 protected:
-    //----------------------------------------------------- Méthodes protégées
+//----------------------------------------------------- Méthodes protégées
 
-    // Vérifie si une chaîne se termine par un suffixe donné
-    bool endsWith(const std::string &str, const std::string &suffix);
+    AnalogReturnCode ReadFile(const std::string & filename);
     // Mode d'emploi :
     //
     // Contrat :
     //
+//----------------------------------------------------- Attributs protégés
+    logsData data;
 
-    // Extrait le domaine à partir d'un référent (referer)
-    std::string getDomainFromReferer(const std::string &referer);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
+    bool option_g; // create dot file
+    std::string dotFileName;
+    bool option_e; // exclude image, css and js files
+    bool option_t; // one-hour interval
+    int hour;
+    bool option_d; // use custom domain name
+    std::string domain;
+    bool option_n;
+    int n;
 
-    // Extrait le document à partir d'un référent
-    std::string getDocumentFromReferer(const std::string &referer);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
-    // Extrait la cible d'une requête HTTP
-    std::string getTargetFromRequest(const std::string &request);
-    // Mode d'emploi :
-    //
-    // Contrat :
-    //
-
-    //----------------------------------------------------- Attributs protégés
-    logsData data; // Stocke les données des logs
-
-    bool option_g;           // Générer un fichier .dot
-    std::string dotFileName; // Nom du fichier .dot
-
-    bool option_e; // Exclure les fichiers image, CSS et JS
-    bool option_t; // Appliquer un filtre sur une plage horaire d'une heure
-    int hour;      // Heure spécifique pour le filtre
-
-    bool option_d;      // Utiliser un nom de domaine personnalisé
-    std::string domain; // Nom de domaine personnalisé
 };
 
 //-------------------------------- Autres définitions dépendantes de <AnalogControl>
